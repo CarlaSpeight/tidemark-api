@@ -27,7 +27,7 @@ class CommentController extends Controller
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
             ->when($request->filled('platform'), fn ($q) => $q->where('platform', $request->input('platform')))
             ->when($request->filled('min_toxicity'), fn ($q) => $q->where('toxicity_score', '>=', $request->integer('min_toxicity')))
-            ->with(['article', 'moderationActions'])
+            ->with(['article.journalist', 'moderationActions' => fn ($q) => $q->latest()->limit(1)])
             ->latest()
             ->paginate($request->integer('per_page', 15));
 
@@ -39,7 +39,7 @@ class CommentController extends Controller
     {
         $this->authorize('view', $comment);
 
-        $comment->load(['article', 'moderationActions.user']);
+        $comment->load(['article.journalist', 'moderationActions.moderator']);
 
         return (new CommentResource($comment))
             ->response();

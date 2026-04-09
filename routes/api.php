@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ModerationController;
 use App\Http\Controllers\Api\ReportsController;
 use App\Http\Controllers\Api\SocialConnectionController;
 use App\Http\Controllers\Api\WebhookController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -114,3 +115,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/weekly-digest', [CreatorController::class, 'weeklyDigest']);
     });
 });
+
+// ── Demo Login Shortcut (only available when APP_ENV=demo) ───
+if (app()->environment('demo')) {
+    Route::get('/demo/switch/{email}', function (string $email) {
+        $user = User::where('email', $email)->firstOrFail();
+        $token = $user->createToken('demo-session')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'tenant_id' => $user->tenant_id,
+            ],
+        ]);
+    })->middleware('throttle:auth');
+}

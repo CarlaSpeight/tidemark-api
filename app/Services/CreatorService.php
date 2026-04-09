@@ -21,9 +21,7 @@ class CreatorService
     {
         $profile = $this->resolveProfile($user);
 
-        $profile->load(['user', 'manager']);
-
-        return $profile;
+        return $profile->load(['user', 'manager']);
     }
 
     public function updateProfile(User $user, array $data): CreatorProfile

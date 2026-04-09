@@ -33,6 +33,25 @@ class StatsCache
         return static::remember("reports:creator:{$userId}", 300, $callback);
     }
 
+    public static function topicHeatmap(string $tenantId, callable $callback): mixed
+    {
+        return static::remember("reports:topic_heatmap:{$tenantId}", 1800, $callback);
+    }
+
+    /**
+     * Return all cache key patterns for warming/flushing.
+     */
+    public static function allPatterns(): array
+    {
+        return [
+            'reports:journalist:',
+            'reports:editor:',
+            'reports:senior:',
+            'reports:creator:',
+            'reports:topic_heatmap:',
+        ];
+    }
+
     public static function flush(string $pattern): void
     {
         if (config('cache.default') === 'redis') {

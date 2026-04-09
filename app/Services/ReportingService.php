@@ -60,7 +60,7 @@ class ReportingService
         $articlesToday = Article::query()
             ->where('journalist_id', $user->id)
             ->where('published_at', '>=', $today)
-            ->with('stat')
+            ->with(['journalist', 'stat'])
             ->get();
 
         $engagementQuery = EngagementResponse::query()
@@ -112,7 +112,7 @@ class ReportingService
 
         $team = $this->teamStats($section, $user->tenant_id);
 
-        $topicHeatmap = $this->topicHeatmap($user);
+        $topicHeatmap = StatsCache::topicHeatmap($user->tenant_id, fn () => $this->topicHeatmap($user));
 
         $engagementPerformance = $this->engagementPerformance($engagementQuery);
 
@@ -231,7 +231,7 @@ class ReportingService
 
         $communityHighlights = CommunityHighlight::query()
             ->where('creator_id', $user->id)
-            ->with('comment')
+            ->with(['comment.article'])
             ->latest()
             ->limit(3)
             ->get();
@@ -445,7 +445,7 @@ class ReportingService
         })->toArray();
     }
 
-    private function topicHeatmap(User $user): array
+    public function topicHeatmap(User $user): array
     {
         $from = now()->subWeeks(8)->startOfWeek();
 

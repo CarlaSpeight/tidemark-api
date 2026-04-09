@@ -19,7 +19,7 @@ class ModerationService
     {
         $query = Comment::query()
             ->forUser($user)
-            ->with(['article', 'moderationActions.moderator']);
+            ->with(['article.journalist', 'moderationActions' => fn ($q) => $q->latest()->limit(1)]);
 
         if ($request->filled('platform')) {
             $query->where('platform', $request->input('platform'));
@@ -44,7 +44,7 @@ class ModerationService
         $query = Comment::query()
             ->where('status', 'hidden')
             ->whereIn('platform', ['facebook', 'youtube', 'website'])
-            ->with(['article', 'moderationActions.moderator']);
+            ->with(['article.journalist', 'moderationActions' => fn ($q) => $q->latest()->limit(1)]);
 
         if ($request->filled('platform')) {
             $platform = $request->input('platform');

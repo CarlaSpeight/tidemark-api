@@ -41,9 +41,9 @@ class EngagementResponse extends Model
         $this->attributes['draft_text'] = strip_tags($value);
     }
 
-    public function setFinalTextAttribute(string $value): void
+    public function setFinalTextAttribute(?string $value): void
     {
-        $this->attributes['final_text'] = strip_tags($value);
+        $this->attributes['final_text'] = $value ? strip_tags($value) : null;
     }
 
     public function comment(): \Illuminate\Database\Eloquent\Relations\BelongsTo

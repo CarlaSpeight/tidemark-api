@@ -24,7 +24,7 @@ class EngagementService
     {
         $query = EngagementResponse::query()
             ->where('status', 'draft')
-            ->with(['comment', 'article', 'toneProfile']);
+            ->with(['comment.article.journalist', 'article', 'approver', 'toneProfile']);
 
         $this->scopeByRole($query, $user);
 
