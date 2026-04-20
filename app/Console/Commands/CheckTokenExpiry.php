@@ -53,7 +53,7 @@ class CheckTokenExpiry extends Command
         $admin = $connection->tenant()
             ->first()
             ?->users()
-            ->where('role', 'admin')
+            ->whereIn('role', ['editor', 'deputy_editor', 'super_admin'])
             ->where('is_active', true)
             ->first();
 

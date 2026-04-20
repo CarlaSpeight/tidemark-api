@@ -66,7 +66,7 @@ class AuthController extends Controller
         $user = $request->user();
         $user->load('tenant');
 
-        if ($user->role === 'creator') {
+        if (in_array($user->role, ['creator', 'agent'], true)) {
             $user->load('creatorProfile');
         }
 
@@ -77,7 +77,7 @@ class AuthController extends Controller
                 'user' => new UserResource($user),
                 'permissions' => $permissions,
                 'tenant_name' => $user->tenant->name,
-                'creator_profile' => $user->role === 'creator'
+                'creator_profile' => in_array($user->role, ['creator', 'agent'], true)
                     ? new \App\Http\Resources\CreatorProfileResource($user->creatorProfile)
                     : null,
             ],
@@ -148,7 +148,7 @@ class AuthController extends Controller
 
     private function authorizeAdmin(Request $request): void
     {
-        if (! $request->user()->isAdmin()) {
+        if (! in_array($request->user()->role, ['super_admin', 'cs_manager'], true)) {
             abort(403, 'Forbidden.');
         }
     }

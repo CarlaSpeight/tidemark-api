@@ -41,6 +41,14 @@ class RolePermissionSeeder extends Seeder
             'users.update',
             'users.delete',
 
+            // Tenant operations
+            'tenants.view',
+            'tenants.manage',
+
+            // Billing and support operations
+            'subscriptions.manage',
+            'credits.manage',
+
             // Settings
             'settings.view',
             'settings.update',
@@ -60,35 +68,57 @@ class RolePermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'sanctum']);
         }
 
-        // Media tier roles
-        $journalist = Role::firstOrCreate(['name' => 'journalist', 'guard_name' => 'sanctum']);
-        $journalist->syncPermissions(['comments.view', 'articles.view', 'reports.view', 'prescore.use']);
+        $publicationBasePermissions = [
+            'comments.view',
+            'articles.view',
+            'reports.view',
+            'prescore.use',
+            'connections.view',
+        ];
 
-        $sectionEditor = Role::firstOrCreate(['name' => 'section_editor', 'guard_name' => 'sanctum']);
-        $sectionEditor->syncPermissions([
+        $teamManagementPermissions = [
+            'users.view',
+            'users.create',
+            'users.update',
+            'users.delete',
+        ];
+
+        // Publication roles
+        $journalist = Role::firstOrCreate(['name' => 'journalist', 'guard_name' => 'sanctum']);
+        $journalist->syncPermissions($publicationBasePermissions);
+
+        $producer = Role::firstOrCreate(['name' => 'producer', 'guard_name' => 'sanctum']);
+        $producer->syncPermissions($publicationBasePermissions);
+
+        $seniorReporter = Role::firstOrCreate(['name' => 'senior_reporter', 'guard_name' => 'sanctum']);
+        $seniorReporter->syncPermissions($publicationBasePermissions);
+
+        $deputyEditor = Role::firstOrCreate(['name' => 'deputy_editor', 'guard_name' => 'sanctum']);
+        $deputyEditor->syncPermissions([
             'comments.view', 'comments.moderate',
             'articles.view', 'articles.create',
             'engagement.view', 'engagement.approve',
-            'connections.view',
+            'connections.view', 'connections.manage',
             'reports.view', 'reports.export',
+            'connections.manage',
+            ...$teamManagementPermissions,
             'prescore.use',
         ]);
 
-        $seniorEditor = Role::firstOrCreate(['name' => 'senior_editor', 'guard_name' => 'sanctum']);
-        $seniorEditor->syncPermissions([
+        $editor = Role::firstOrCreate(['name' => 'editor', 'guard_name' => 'sanctum']);
+        $editor->syncPermissions([
             'comments.view', 'comments.moderate', 'comments.delete',
             'articles.view', 'articles.create', 'articles.update',
             'engagement.view', 'engagement.approve',
             'connections.view', 'connections.manage',
             'reports.view', 'reports.export',
             'users.view',
+            'users.create',
+            'users.update',
             'prescore.use',
         ]);
 
-        $admin = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'sanctum']);
-        $admin->syncPermissions(Permission::where('guard_name', 'sanctum')->pluck('name')->toArray());
-
-        // Creator tier roles
+        // Creator roles
         $creator = Role::firstOrCreate(['name' => 'creator', 'guard_name' => 'sanctum']);
         $creator->syncPermissions([
             'comments.view', 'comments.moderate',
@@ -97,8 +127,8 @@ class RolePermissionSeeder extends Seeder
             'creator.manage_profile', 'creator.manage_shield',
         ]);
 
-        $creatorManager = Role::firstOrCreate(['name' => 'creator_manager', 'guard_name' => 'sanctum']);
-        $creatorManager->syncPermissions([
+        $agent = Role::firstOrCreate(['name' => 'agent', 'guard_name' => 'sanctum']);
+        $agent->syncPermissions([
             'comments.view', 'comments.moderate', 'comments.delete',
             'connections.view', 'connections.manage',
             'engagement.view', 'engagement.approve',
@@ -107,5 +137,33 @@ class RolePermissionSeeder extends Seeder
             'settings.view', 'settings.update',
             'creator.manage_profile', 'creator.manage_shield',
         ]);
+
+        // Internal staff roles
+        $friendsFamily = Role::firstOrCreate(['name' => 'friends_family', 'guard_name' => 'sanctum']);
+        $friendsFamily->syncPermissions(['comments.view', 'articles.view', 'reports.view']);
+
+        $csAgent = Role::firstOrCreate(['name' => 'cs_agent', 'guard_name' => 'sanctum']);
+        $csAgent->syncPermissions([
+            'comments.view', 'articles.view', 'reports.view',
+            'users.view', 'users.update',
+            'tenants.view',
+        ]);
+
+        $csManager = Role::firstOrCreate(['name' => 'cs_manager', 'guard_name' => 'sanctum']);
+        $csManager->syncPermissions([
+            'comments.view', 'articles.view', 'reports.view', 'reports.export',
+            'users.view', 'users.create', 'users.update', 'users.delete',
+            'tenants.view', 'tenants.manage',
+            'subscriptions.manage', 'credits.manage',
+            'settings.view',
+        ]);
+
+        $superAdmin = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'sanctum']);
+        $superAdmin->syncPermissions(Permission::where('guard_name', 'sanctum')->pluck('name')->toArray());
+
+        // Remove legacy roles after migration to keep permissions clean.
+        Role::whereIn('name', ['section_editor', 'senior_editor', 'admin', 'creator_manager'])
+            ->where('guard_name', 'sanctum')
+            ->delete();
     }
 }

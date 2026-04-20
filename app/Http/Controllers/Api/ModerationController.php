@@ -31,7 +31,7 @@ class ModerationController
 
     public function hiddenLibrary(Request $request): JsonResponse
     {
-        $this->authorizeRole($request, ['section_editor', 'senior_editor', 'admin']);
+        $this->authorizeRole($request, ['deputy_editor', 'editor', 'super_admin', 'cs_manager', 'cs_agent', 'friends_family']);
 
         $request->validate([
             'platform' => 'sometimes|string|in:facebook,youtube,website',

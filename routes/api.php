@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\CreatorController;
 use App\Http\Controllers\Api\EngagementController;
 use App\Http\Controllers\Api\ModerationController;
+use App\Http\Controllers\Api\PostHistoryController;
+use App\Http\Controllers\Api\PrescoreController;
 use App\Http\Controllers\Api\ReportsController;
 use App\Http\Controllers\Api\SocialConnectionController;
 use App\Http\Controllers\Api\WebhookController;
@@ -79,8 +82,21 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── Admin session management ─────────────────────────────
     Route::prefix('admin')->group(function () {
+        Route::get('/platform-stats', [AdminController::class, 'platformStats']);
         Route::get('/sessions', [AuthController::class, 'sessions']);
         Route::delete('/users/{user}/sessions', [AuthController::class, 'revokeSessions']);
+    });
+
+    // ── Risk Check / Prescore ────────────────────────────────
+    Route::middleware('throttle:prescore')->prefix('risk-check')->group(function () {
+        Route::post('/analyse', [PrescoreController::class, 'analyse']);
+        Route::get('/batch-status/{batchId}', [PrescoreController::class, 'batchStatus']);
+    });
+
+    // ── Post History ─────────────────────────────────────────
+    Route::middleware('throttle:api')->prefix('post-history')->group(function () {
+        Route::get('/', [PostHistoryController::class, 'index']);
+        Route::post('/analyse-batch', [PostHistoryController::class, 'analyseBatch']);
     });
 
     // ── Reports ──────────────────────────────────────────────
@@ -98,8 +114,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/drafts/{draft}/approve', [EngagementController::class, 'approve']);
         Route::post('/drafts/{draft}/edit-and-approve', [EngagementController::class, 'editAndApprove']);
         Route::post('/drafts/{draft}/reject', [EngagementController::class, 'reject']);
+        Route::get('/tone-profiles', [EngagementController::class, 'getToneProfile']);
         Route::post('/tone-profiles', [EngagementController::class, 'storeToneProfile']);
         Route::get('/performance', [EngagementController::class, 'performance']);
+        Route::get('/posted', [EngagementController::class, 'posted']);
+        Route::get('/auto-rules', [EngagementController::class, 'indexAutoRules']);
+        Route::post('/auto-rules', [EngagementController::class, 'storeAutoRule']);
+        Route::patch('/auto-rules/{autoRule}', [EngagementController::class, 'updateAutoRule']);
+        Route::delete('/auto-rules/{autoRule}', [EngagementController::class, 'destroyAutoRule']);
         Route::post('/pause', [EngagementController::class, 'pause']);
         Route::post('/resume', [EngagementController::class, 'resume']);
     });

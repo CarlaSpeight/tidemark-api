@@ -147,7 +147,7 @@ class ReportingService
         $postedEngagement = (clone $engagementQuery)->whereNotNull('posted_at')->count();
 
         $welfareFlagsCount = User::where('tenant_id', $user->tenant_id)
-            ->where('role', 'journalist')
+            ->whereIn('role', ['journalist', 'producer', 'senior_reporter'])
             ->where('is_active', true)
             ->get()
             ->filter(fn ($j) => Comment::query()
@@ -395,7 +395,7 @@ class ReportingService
     {
         $journalists = User::where('tenant_id', $tenantId)
             ->where('section', $section)
-            ->where('role', 'journalist')
+            ->whereIn('role', ['journalist', 'producer', 'senior_reporter'])
             ->where('is_active', true)
             ->get();
 
@@ -556,7 +556,7 @@ class ReportingService
         $thisMonth = now()->startOfMonth();
 
         return User::where('tenant_id', $user->tenant_id)
-            ->where('role', 'journalist')
+            ->whereIn('role', ['journalist', 'producer', 'senior_reporter'])
             ->where('is_active', true)
             ->get()
             ->filter(function ($journalist) use ($thisMonth) {
@@ -697,8 +697,9 @@ class ReportingService
     private function scopeArticlesForUser($query, User $user): void
     {
         match ($user->role) {
-            'journalist' => $query->where('journalist_id', $user->id),
-            'section_editor' => $query->whereHas('journalist', fn ($q) => $q->where('section', $user->section)),
+            'journalist', 'producer', 'senior_reporter', 'creator' => $query->where('journalist_id', $user->id),
+            'deputy_editor', 'editor' => $query->whereHas('journalist', fn ($q) => $q->where('section', $user->section)),
+            'agent' => $query->whereHas('journalist.creatorProfile', fn ($q) => $q->where('manager_user_id', $user->id)),
             default => $query,
         };
     }

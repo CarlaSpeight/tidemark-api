@@ -47,29 +47,29 @@ class DatabaseSeeder extends Seeder
             'tenant_id' => $mediaTenant->id,
             'name' => 'Admin User',
             'email' => 'admin@tidemark.media',
-            'role' => 'admin',
+            'role' => 'super_admin',
         ]);
-        $admin->assignRole('admin');
+        $admin->assignRole('super_admin');
 
         $seniorEditor = User::factory()->create([
             'tenant_id' => $mediaTenant->id,
             'name' => 'Sarah Jenkins',
             'email' => 'sarah.jenkins@tidemark.media',
-            'role' => 'senior_editor',
+            'role' => 'editor',
             'section' => 'Football',
         ]);
-        $seniorEditor->assignRole('senior_editor');
+        $seniorEditor->assignRole('editor');
 
         $sectionEditors = collect();
         $sections = ['Football', 'Cricket', 'Rugby', 'Tennis'];
         foreach ($sections as $section) {
             $editor = User::factory()->create([
                 'tenant_id' => $mediaTenant->id,
-                'role' => 'section_editor',
+                'role' => 'deputy_editor',
                 'section' => $section,
                 'email' => strtolower(str_replace(' ', '.', fake()->name())) . '@tidemark.media',
             ]);
-            $editor->assignRole('section_editor');
+            $editor->assignRole('deputy_editor');
             $sectionEditors->push($editor);
         }
 
@@ -103,9 +103,9 @@ class DatabaseSeeder extends Seeder
             'tenant_id' => $creatorTenant->id,
             'name' => 'Jordan Manager',
             'email' => 'jordan@tidemark.media',
-            'role' => 'creator_manager',
+            'role' => 'agent',
         ]);
-        $creatorManager->assignRole('creator_manager');
+        $creatorManager->assignRole('agent');
 
         // ── Social Connections ──────────────────────────────
         $platforms = ['website', 'facebook', 'instagram', 'twitter', 'youtube'];
@@ -200,7 +200,7 @@ class DatabaseSeeder extends Seeder
 
         // ── Moderation Actions (for ~500 hidden/deleted comments) ─
         $moderatedComments = $comments->whereIn('status', ['hidden', 'confirmed_deleted', 'deleted', 'restored'])->take(500);
-        $moderators = $allMediaUsers->filter(fn ($u) => in_array($u->role, ['section_editor', 'senior_editor', 'admin']));
+        $moderators = $allMediaUsers->filter(fn ($u) => in_array($u->role, ['deputy_editor', 'editor', 'super_admin']));
 
         foreach ($moderatedComments as $comment) {
             ModerationAction::create([

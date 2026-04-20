@@ -245,8 +245,9 @@ class EngagementService
     private function scopeByRole($query, User $user): void
     {
         match ($user->role) {
-            'journalist' => $query->whereHas('article', fn ($q) => $q->where('journalist_id', $user->id)),
-            'section_editor' => $query->whereHas('article.journalist', fn ($q) => $q->where('section', $user->section)),
+            'journalist', 'producer', 'senior_reporter', 'creator' => $query->whereHas('article', fn ($q) => $q->where('journalist_id', $user->id)),
+            'deputy_editor', 'editor' => $query->whereHas('article.journalist', fn ($q) => $q->where('section', $user->section)),
+            'agent' => $query->whereHas('article.journalist.creatorProfile', fn ($q) => $q->where('manager_user_id', $user->id)),
             default => $query,
         };
     }

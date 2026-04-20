@@ -1,5 +1,9 @@
 <?php
 
+// Suppress PHP 8.5 deprecation notices from vendor code (PDO constant renames)
+// polluting JSON responses. Remove once Laravel supports PHP 8.5 natively.
+error_reporting(E_ALL & ~E_DEPRECATED);
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,8 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api/v1',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->statefulApi();
-
         // All routes
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 

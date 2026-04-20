@@ -104,8 +104,8 @@ class CreatorController
 
     private function authorizeCreatorAccess(Request $request): void
     {
-        if (! in_array($request->user()->role, ['creator', 'creator_manager'])) {
-            abort(403, 'Only creators and creator managers can access this resource.');
+        if (! in_array($request->user()->role, ['creator', 'agent'], true)) {
+            abort(403, 'Only creators and agents can access this resource.');
         }
     }
 }

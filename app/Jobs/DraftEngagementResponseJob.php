@@ -128,7 +128,7 @@ class DraftEngagementResponseJob implements ShouldQueue
         // Notify community manager that draft awaits approval
         $manager = User::where('tenant_id', $comment->tenant_id)
             ->where('is_active', true)
-            ->whereIn('role', ['section_editor', 'senior_editor', 'admin'])
+            ->whereIn('role', ['deputy_editor', 'editor', 'super_admin'])
             ->first();
 
         if ($manager) {

@@ -32,7 +32,7 @@ class ReportsController
     {
         $user = $request->user();
 
-        if (! $user->hasAnyRole(['section_editor', 'senior_editor', 'admin'])) {
+        if (! $user->hasAnyRole(['deputy_editor', 'editor', 'super_admin'])) {
             abort(403);
         }
 
@@ -49,7 +49,7 @@ class ReportsController
     {
         $user = $request->user();
 
-        if (! $user->hasAnyRole(['senior_editor', 'admin'])) {
+        if (! $user->hasAnyRole(['deputy_editor', 'editor', 'super_admin'])) {
             abort(403);
         }
 
@@ -65,7 +65,7 @@ class ReportsController
     {
         $user = $request->user();
 
-        if (! $user->hasAnyRole(['creator', 'creator_manager'])) {
+        if (! $user->hasAnyRole(['creator', 'agent'])) {
             abort(403);
         }
 
@@ -81,7 +81,7 @@ class ReportsController
     {
         $user = $request->user();
 
-        if (! $user->hasAnyRole(['senior_editor', 'admin'])) {
+        if (! $user->hasAnyRole(['deputy_editor', 'editor', 'super_admin'])) {
             abort(403);
         }
 

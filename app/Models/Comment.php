@@ -71,9 +71,13 @@ class Comment extends Model
     public function scopeForUser(Builder $query, User $user): Builder
     {
         return match ($user->role) {
-            'journalist' => $query->whereHas('article', fn (Builder $q) => $q->where('journalist_id', $user->id)),
-            'section_editor' => $query->whereHas('article', fn (Builder $q) => $q->whereHas('journalist', fn (Builder $u) => $u->where('section', $user->section))),
-            default => $query,
+            'producer', 'journalist', 'senior_reporter', 'creator' => $query->whereHas('article', fn (Builder $q) => $q->where('journalist_id', $user->id)),
+            'deputy_editor', 'editor' => $query->whereHas('article', fn (Builder $q) => $q->whereHas('journalist', fn (Builder $u) => $u->where('section', $user->section))),
+            'agent' => $query->whereHas('article', function (Builder $q) use ($user) {
+                $q->whereHas('journalist', fn (Builder $u) => $u->whereHas('creatorProfile', fn (Builder $cp) => $cp->where('manager_user_id', $user->id)));
+            }),
+            'super_admin', 'cs_manager', 'cs_agent', 'friends_family' => $query,
+            default => $query->whereRaw('1 = 0'),
         };
     }
 

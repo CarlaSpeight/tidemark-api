@@ -14,13 +14,17 @@ class Article extends Model
         'tenant_id',
         'journalist_id',
         'title',
+        'caption',
         'url',
+        'thumbnail_url',
         'platform',
         'platform_post_id',
         'published_at',
         'subject_entities',
         'sensitivity_level',
         'topic_category',
+        'predicted_score',
+        'risk_level',
         'comments_enabled',
     ];
 

@@ -13,6 +13,8 @@ class UserResource extends BaseResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role,
+            'account_type' => $this->user_account_type,
+            'role_display_name' => $this->roleDisplayName(),
             'section' => $this->section,
             'job_title' => $this->job_title,
             'is_active' => $this->is_active,

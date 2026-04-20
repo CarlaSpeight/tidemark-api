@@ -18,6 +18,10 @@ class TenantIsolation
             return $next($request);
         }
 
+        if ($user->isSuperAdmin()) {
+            return $next($request);
+        }
+
         foreach ($request->route()->parameters() as $parameter) {
             if ($parameter instanceof Model && $this->isTenantScoped($parameter)) {
                 if ($parameter->tenant_id !== $user->tenant_id) {

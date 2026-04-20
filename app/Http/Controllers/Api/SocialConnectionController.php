@@ -23,7 +23,7 @@ class SocialConnectionController extends Controller
 
     /**
      * GET /social/connections
-     * Admin or senior_editor only.
+    * Editor/deputy_editor/super_admin only.
      */
     public function index(Request $request): JsonResponse
     {
@@ -130,7 +130,7 @@ class SocialConnectionController extends Controller
 
     /**
      * DELETE /social/connections/{connection}
-     * Admin or senior_editor only.
+    * Editor/deputy_editor/super_admin only.
      */
     public function destroy(Request $request, SocialConnection $connection): JsonResponse
     {
@@ -149,19 +149,19 @@ class SocialConnectionController extends Controller
     {
         $user = $request->user();
 
-        if (! in_array($user->role, ['admin', 'senior_editor'], true)) {
+        if (! in_array($user->role, ['editor', 'deputy_editor', 'super_admin'], true)) {
             abort(403, 'Forbidden.');
         }
     }
 
     /**
      * POST /social/website/webhook-secret/regenerate
-     * Admin only.
+    * Editor or super_admin only.
      */
     public function regenerateWebhookSecret(Request $request): JsonResponse
     {
-        if ($request->user()->role !== 'admin') {
-            abort(403, 'Only admins can regenerate the webhook secret.');
+        if (! in_array($request->user()->role, ['editor', 'deputy_editor', 'super_admin'], true)) {
+            abort(403, 'Only editors can regenerate the webhook secret.');
         }
 
         $newSecret = Str::random(64);

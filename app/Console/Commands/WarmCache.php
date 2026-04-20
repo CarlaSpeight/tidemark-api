@@ -30,7 +30,7 @@ class WarmCache extends Command
 
             // Senior dashboard (one per tenant)
             $seniorUser = User::where('tenant_id', $tenant->id)
-                ->whereIn('role', ['senior_editor', 'admin'])
+                ->whereIn('role', ['editor', 'deputy_editor', 'super_admin'])
                 ->where('is_active', true)
                 ->first();
 
@@ -41,7 +41,7 @@ class WarmCache extends Command
 
             // Editor dashboards (per section)
             $sectionEditors = User::where('tenant_id', $tenant->id)
-                ->where('role', 'section_editor')
+                ->where('role', 'deputy_editor')
                 ->where('is_active', true)
                 ->get();
 
@@ -70,7 +70,7 @@ class WarmCache extends Command
 
             // Creator dashboards
             $creators = User::where('tenant_id', $tenant->id)
-                ->whereIn('role', ['creator', 'creator_manager'])
+                ->whereIn('role', ['creator', 'agent'])
                 ->where('is_active', true)
                 ->get();
 

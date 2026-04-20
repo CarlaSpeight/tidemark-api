@@ -16,6 +16,10 @@ trait HasTenant
                 return;
             }
 
+            if (auth()->check() && auth()->user()->isSuperAdmin()) {
+                return;
+            }
+
             if (auth()->check() && auth()->user()->tenant_id) {
                 $builder->where(
                     $builder->getModel()->getTable() . '.tenant_id',

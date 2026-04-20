@@ -19,6 +19,7 @@ class PrescoreRequest extends Model
         'predicted_score',
         'risk_level',
         'suggestions',
+        'visual_context',
         'accepted_suggestion',
         'accepted_at',
     ];
@@ -27,6 +28,7 @@ class PrescoreRequest extends Model
     {
         return [
             'suggestions' => 'array',
+            'visual_context' => 'array',
             'accepted_at' => 'datetime',
         ];
     }

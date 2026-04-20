@@ -46,62 +46,62 @@ class DemoSeeder extends Seeder
             ],
         ]);
 
-        // ── Media Users (8): 1 admin, 1 senior_editor, 2 section_editors, 4 journalists ──
+        // ── Media Users (8): super_admin, editor, deputy_editor, senior_reporter, journalists ──
         $password = Hash::make(self::DEMO_PASSWORD);
 
         $admin = User::create([
             'tenant_id' => $mediaTenant->id,
-            'name' => 'James Barrett',
-            'email' => 'james.barrett@bbc.co.uk',
+            'name' => 'Admin Demo',
+            'email' => 'admin@bbcsport.demo',
             'password' => $password,
-            'role' => 'admin',
+            'role' => 'super_admin',
             'section' => null,
-            'job_title' => 'Head of Digital',
+            'job_title' => 'Platform Administrator',
             'is_active' => true,
         ]);
-        $admin->assignRole('admin');
+        $admin->assignRole('super_admin');
 
         $seniorEditor = User::create([
             'tenant_id' => $mediaTenant->id,
-            'name' => 'Rachel Williams',
-            'email' => 'rachel.williams@bbc.co.uk',
+            'name' => 'Helen Crawford',
+            'email' => 'helen.crawford@bbcsport.demo',
             'password' => $password,
-            'role' => 'senior_editor',
+            'role' => 'editor',
             'section' => 'Sport',
-            'job_title' => 'Senior Sports Editor',
+            'job_title' => 'Editor',
             'is_active' => true,
         ]);
-        $seniorEditor->assignRole('senior_editor');
+        $seniorEditor->assignRole('editor');
 
         $sectionEditor1 = User::create([
             'tenant_id' => $mediaTenant->id,
-            'name' => 'Mark Thompson',
-            'email' => 'mark.thompson@bbc.co.uk',
+            'name' => 'Aisha Mensah',
+            'email' => 'aisha.mensah@bbcsport.demo',
             'password' => $password,
-            'role' => 'section_editor',
+            'role' => 'deputy_editor',
             'section' => 'Football',
-            'job_title' => 'Football Editor',
+            'job_title' => 'Deputy Editor',
             'is_active' => true,
         ]);
-        $sectionEditor1->assignRole('section_editor');
+        $sectionEditor1->assignRole('deputy_editor');
 
         $sectionEditor2 = User::create([
             'tenant_id' => $mediaTenant->id,
-            'name' => 'Lisa Chen',
-            'email' => 'lisa.chen@bbc.co.uk',
+            'name' => 'Marcus Thompson',
+            'email' => 'marcus.thompson@bbcsport.demo',
             'password' => $password,
-            'role' => 'section_editor',
+            'role' => 'journalist',
             'section' => 'Cricket',
-            'job_title' => 'Cricket Editor',
+            'job_title' => 'Journalist',
             'is_active' => true,
         ]);
-        $sectionEditor2->assignRole('section_editor');
+        $sectionEditor2->assignRole('journalist');
 
         // Journalists — Sarah Jones & Priya Sharma get welfare flags (>50 personal attacks each)
         $sarahJones = User::create([
             'tenant_id' => $mediaTenant->id,
             'name' => 'Sarah Jones',
-            'email' => 'sarah.jones@bbc.co.uk',
+            'email' => 'sarah.jones@bbcsport.demo',
             'password' => $password,
             'role' => 'journalist',
             'section' => 'Football',
@@ -113,19 +113,19 @@ class DemoSeeder extends Seeder
         $priyaSharma = User::create([
             'tenant_id' => $mediaTenant->id,
             'name' => 'Priya Sharma',
-            'email' => 'priya.sharma@bbc.co.uk',
+            'email' => 'priya.sharma@bbcsport.demo',
             'password' => $password,
-            'role' => 'journalist',
+            'role' => 'senior_reporter',
             'section' => 'Cricket',
-            'job_title' => 'Cricket Correspondent',
+            'job_title' => 'Senior Reporter',
             'is_active' => true,
         ]);
-        $priyaSharma->assignRole('journalist');
+        $priyaSharma->assignRole('senior_reporter');
 
         $tomHughes = User::create([
             'tenant_id' => $mediaTenant->id,
-            'name' => 'Tom Hughes',
-            'email' => 'tom.hughes@bbc.co.uk',
+            'name' => 'James OBrien',
+            'email' => 'james.obrien@bbcsport.demo',
             'password' => $password,
             'role' => 'journalist',
             'section' => 'Rugby',
@@ -146,7 +146,7 @@ class DemoSeeder extends Seeder
         ]);
         $emmaKnight->assignRole('journalist');
 
-        $moderators = collect([$admin, $seniorEditor, $sectionEditor1, $sectionEditor2]);
+        $moderators = collect([$admin, $seniorEditor, $sectionEditor1]);
         $journalists = collect([$sarahJones, $priyaSharma, $tomHughes, $emmaKnight]);
         $allMediaUsers = $moderators->merge($journalists);
 
@@ -463,10 +463,31 @@ class DemoSeeder extends Seeder
             'name' => 'Jordan Rivers',
             'email' => 'jordan@tidemark.media',
             'password' => $password,
-            'role' => 'creator_manager',
+            'role' => 'agent',
             'is_active' => true,
         ]);
-        $creatorManager->assignRole('creator_manager');
+        $creatorManager->assignRole('agent');
+
+        $staffTenant = Tenant::create([
+            'name' => 'Tidemark Internal',
+            'slug' => 'tidemark-internal',
+            'subscription_tier' => 'free',
+            'product_tier' => 'media',
+            'is_active' => true,
+            'settings' => [],
+        ]);
+
+        $carla = User::create([
+            'tenant_id' => $staffTenant->id,
+            'name' => 'Carla Tidemark',
+            'email' => 'carla@tidemark.com',
+            'password' => $password,
+            'role' => 'super_admin',
+            'section' => null,
+            'job_title' => 'Super Admin',
+            'is_active' => true,
+        ]);
+        $carla->assignRole('super_admin');
 
         SocialConnection::create([
             'tenant_id' => $creatorTenant->id,

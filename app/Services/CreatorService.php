@@ -140,8 +140,8 @@ class CreatorService
 
     private function resolveProfile(User $user): CreatorProfile
     {
-        // Creator sees own profile; manager sees their managed creator's profile
-        if ($user->role === 'creator_manager') {
+        // Creator sees own profile; agent sees managed creator profiles.
+        if ($user->role === 'agent') {
             $profile = CreatorProfile::withoutGlobalScope('tenant')
                 ->where('manager_user_id', $user->id)
                 ->firstOrFail();

@@ -98,7 +98,7 @@ abstract class AbstractPlatformService implements PlatformServiceInterface
         ]);
 
         $admin = $connection->tenant?->users()
-            ->where('role', 'admin')
+            ->whereIn('role', ['editor', 'deputy_editor', 'super_admin'])
             ->where('is_active', true)
             ->first();
 
